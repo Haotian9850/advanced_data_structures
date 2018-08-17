@@ -79,22 +79,41 @@ public class main {
         q.display();
 
         System.out.println("--------------------------------- binarySearchTree test---------------------------------");
+        randomArrayGenerator r1 = new randomArrayGenerator();
+        int[] avl = r1.generateRandomArray(50);
         binarySearchTree g = new binarySearchTree();
         int[] f = new int[]{9, 5, 1, 2, 4, 7, 8, 3, 12, 11};
-        g.constructFromArray(f);
+        g.constructFromArray(avl);
         System.out.println(g.isEmpty());
         g.display();
         g.insert(29);
         System.out.println(g.countNodes());
         g.display();
         System.out.println(g.isEmpty());
-        g.delete(9);
-        g.delete(1);
         g.display();
 
         g.inOrderTraversal();
         g.preOrderTraversal();
         g.postOrderTraversal();
 
+        System.out.println("--------------------------------- minHeap test---------------------------------");
+        int[] h = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+        minHeap m = new minHeap();
+        m.constructFromArray(h);
+        m.displayArray();
+        m.display();
+
+        System.out.println("--------------------------------- avlTree test---------------------------------");
+
+        avlTree testAVL = new avlTree();
+        testAVL.constructFromArray(avl);
+        testAVL.display();
+
+        System.out.println("--------------------------------- randomArrayGenerator ---------------------------------");
+        randomArrayGenerator r = new randomArrayGenerator();
+        int[] resultArray = r.generateRandomArray(29, 50);
+        for(Integer resultArrayNum: resultArray){
+            System.out.print(resultArrayNum + " ");
+        }
     }
 }

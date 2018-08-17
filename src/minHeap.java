@@ -1,19 +1,20 @@
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 /*
-* Array-base max heap with int data. Heap root is set to the first (index = 0) element of the underlying array
+* Array-base min heap with int data. Heap root is set to the first (index = 0) element of the underlying array
 * Implementation*/
-public class maxHeap {
+public class minHeap {
     private final int n = 2;    //number of children for every heap node
     private int size;       //size of heap (AKA number of valid heap nodes)
     private int[] array;    //underlying array
 
-    public maxHeap(){
+    public minHeap(){
         this.size = 0;
         this.array = new int[0];
     }
 
-    public maxHeap(int capacity){
+    public minHeap(int capacity){
         this.size = 0;
         this.array = new int[capacity];
         Arrays.fill(this.array, -1);    //initialize underlying array with placeholder values (-1)
@@ -101,6 +102,91 @@ public class maxHeap {
         }
         this.array[this.size ++] = value;
         heapifyUp(this.size - 1);   //perform heapify up on the node just inserted
+    }
+
+    /*find min value of the heap*/
+    public int findMin(){
+        if(isEmpty()){
+            throw new NoSuchElementException("The heap is empty!");
+        }
+        return this.array[0];
+    }
+
+    /*standard deleteMin operation of a min heap*/
+    public int deleteMin(){
+        int result = this.array[0];
+        delete(0);
+        return result;
+    }
+
+    /*remove a specified index from the heap then restore all heap properties*/
+    public int delete(int index){
+        if(isEmpty()){
+            throw new NoSuchElementException("The heap is empty!");
+        }
+        int toBeDeleted = this.array[index];
+        this.array[index] = this.array[this.size - 1];
+        this.size --;
+        heapifyDown(index);
+        return toBeDeleted;
+    }
+
+    /*display underlying array of a heap*/
+    public void displayArray(){
+        if(isEmpty()){
+            throw new NoSuchElementException("The heap is empty!");
+        }
+        System.out.print("nodeValue: ");
+        for(int i = 0; i < this.size; i ++){
+            System.out.print(this.array[i] + " ");
+        }
+        System.out.println();
+        System.out.print("index:     ");
+        for(int i = 0; i < this.size; i ++){
+            System.out.print(i + " ");
+        }
+        System.out.println();   //new line separator
+    }
+
+    /*construct a min heap from an int[]*/
+    public void constructFromArray(int[] a){
+        this.setCapacity(a.length);
+        for(Integer i: a){
+            this.insert(i);
+        }
+    }
+
+    /*return true if a min heap has full size property*/
+    public boolean isComplete(){
+        int size = this.size;
+        int minus = 1;
+        while(size != 0){
+            size -= minus;
+            minus *= 2;
+            if(size < 0){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /*visualization of an array-based min heap*/
+    public void display(){
+        if(!isComplete()){
+            throw new IndexOutOfBoundsException("The heap is not complete and therefore cannot be visualized.");
+        }
+        int numberOfNodes = 2;
+        int currIndex = 1;
+        System.out.println(this.array[0]);
+        while(currIndex < this.size){
+            for(int i = currIndex; i < currIndex + numberOfNodes; i ++){
+                System.out.print(this.array[i] + " ");
+            }
+            int temp = currIndex;
+            currIndex += numberOfNodes;
+            numberOfNodes *= 2;
+            System.out.println();   //new line separator
+        }
     }
 
 
