@@ -300,6 +300,7 @@ public class BinaryTreeProblem {
             //check val via mirror pattern
             return symmetricDFS(leftNode.right, rightNode.left) && symmetricDFS(leftNode.left, rightNode.right);
         }
+        return false;   //every thing should be already handled...
     }
 
     /*
@@ -321,10 +322,102 @@ public class BinaryTreeProblem {
         if(root == null){
             return 0;
         }
-        int leftMax = diameterDFS(root.left);
-        int rightMax = diameterDFS(root.right);
+        int leftMax = diameterDFS(result, root.left);
+        int rightMax = diameterDFS(result, root.right);
         //update intermediate result
         result = Math.max(result, leftMax + rightMax);
         return Math.max(leftMax, rightMax) + 1; //return to previous layer (only to update result)
+    }
+
+    /*
+    * Binary tree inorder traversal: iterative approach
+    * */
+    public List<Integer> inOrderIterative(TreeNode root){
+        //return all nodes in-order as a list of nodes
+        LinkedList<Integer> result = new ArrayList<>();
+        LinkedList<TreeNode> stack = new LinkedList<>();
+        TreeNode currNode = root;
+        while(!stack.isEmpty() || currNode != null){
+            //discussion
+            while(currNode != null){
+                stack.add(currNode);
+                currNode = currNode.left;
+            }
+            //currNode == null -> reset currNode ptr
+            currNode = stack.poll();
+            result.add(currNode.val);
+            currNode = currNode.right;
+        }
+        return result;
+    }
+
+    /*
+    * Binary tree paths: given a binary tree, return all root-to-leaf path
+    * */
+    public List<String> binaryTreePaths(TreeNode root){
+        //handle edge case
+        List<String> result = new ArrayList<>();
+        if(root == null){
+            return result;
+        }
+        binaryTreePathUtil(root, result, "");
+        return result;
+    }
+
+    private void binaryTreePathUtil(TreeNode node, List<String> result, String temp){
+        //DFS the tree, append temp to result at base case layer
+        if(node.left == null && node.right == null){
+            result.add(temp + String.valueOf(node.val));
+        }
+        if(node.left != null){
+            binaryTreePathUtil(node.left, result, temp + String.valueOf(node.val) + "->");
+        }
+        if(node.right != null){
+            binaryTreePathUtil(node.right, result, temp + String.valueOf(node.val) + "->");
+        }
+    }
+
+    /*
+    * Same tree: given two binary trees, write a function to check if they are the same or not
+    * */
+    public boolean isSameTree(TreeNode p, TreeNode q){
+        //DFS to check shape -> check val
+        //base cacse
+        if(p == null && q == null){
+            return true;
+        }
+        if(p == null || q == null){
+            return false;
+        }
+        if(p.val != q.val){
+            return false;
+        }
+        return isSameTree(p.left, q.left) && isSameTree(p.right, q.right);
+    }
+
+    /*
+    * Binary tree maximum path sum: Given a non-empty binary tree, find the maximum path sum.
+    * The path must contain at least one node and does not need to go through the root.
+    * */
+    public int maxPathSum(TreeNode root){
+        int result = Integer.MIN_VALUE;
+        if(root == null){
+            return 0;
+        }
+        maxPathSumUtil(root, result);
+        return result;
+    }
+
+    private int maxPathSumUtil(TreeNode root, int temp){
+        //bottom-up approach
+        if(root == null){
+            return 0;
+        }
+        int leftSum = Math.max(maxPathSumUtil(root.left, temp), 0);
+        int rightSum = Math.max(maxPathSumUtil(root.right, temp), 0);
+        int sum = leftSum + rightSum + root.val;
+        //update intermediate result
+        temp = Math.max(temp, sum);
+        return Math.max(leftSum, rightSum) + root.val;
     }
 }
