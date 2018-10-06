@@ -1,4 +1,7 @@
+import jdk.nashorn.api.tree.Tree;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -139,5 +142,191 @@ public class BinaryTreeProblem {
             }
         }
         return result;
+    }
+
+    /*
+    * Binary tree right side view
+    * LCA
+    * Validate binary search tree
+    * Binary tree vertical order traversal
+    * Symmetric tree
+    *
+    * */
+
+    /*
+    * Binary tree right side view
+    * */
+    public List<Integer> rightSideView(TreeNode root){
+        //BFS the tree, return every last node at every level
+        List<Integer> result = new ArrayList<>();
+        //handle edge case
+        if(root == null){
+            return result;
+        }
+        LinkedList<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        while(!queue.isEmpty()){
+            int len = queue.size();
+            for(int i = 0; i < len; ++ i){
+                TreeNode temp = queue.poll();
+                if(i == 0){
+                    //add to result
+                    result.add(temp.val);
+                }
+                if(temp.right != null){
+                    queue.add(temp.right);
+                }
+                if(temp.left != null){
+                    queue.add(temp.left);
+                }
+            }
+        }
+        return result;
+    }
+
+    /*
+    * LCA (classic of classics!)
+    * */
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q){
+        //base case
+        if(root == null || root == p || root == q){
+            return root;
+        }
+        //search in each subtree
+        TreeNode left = lowestCommonAncestor(root.left, p, q);
+        TreeNode right = lowestCommonAncestor(root.right, p, q);
+        if(left != null && right != null) {
+            return root;
+        }else if(left == null){
+            return right;
+        }else{
+            return left;
+        }
+    }
+
+    /*
+    * Validate binary search tree
+    * */
+    public boolean isValidBST(TreeNode root){
+        //handle edge case
+        if(root == null){
+            return true;
+        }
+        return validate(root, Double.MIN_VALUE, Double.MAX_VALUE);
+    }
+
+    private boolean validate(TreeNode root, double min, double max){
+        //base case
+        if(root == null){
+            return true;    //check all
+        }
+        if(root.val <= min || root.val >= max){
+            return false;   //not satisfying BST property
+        }
+        return validate(root.left, min, root.val) && validate(root.right, root.val, max);
+    }
+
+    /*
+    * Binary tree vertical order traversal
+    * */
+    public List<List<Integer>> verticalOrder(TreeNode root){
+        //BFS tree, also use a hashmap to keep track of vertical layer (spread from root)
+        List<List<Integer>> result = new ArrayList<>();
+        //handle edge case
+        if(root == null){
+            return result;
+        }
+        HashMap<Integer, List<Integer>> dict = new HashMap<>();
+        LinkedList<TreeNode> queue = new LinkedList<>();    //BFS of tree
+        LinkedList<Integer> levels = new LinkedList<>();   //current vertical layer
+        queue.add(root);
+        levels.add(0);
+        int minLevel = 0;
+        int maxLevel = 0;
+        while(!queue.isEmpty()){
+            TreeNode temp = queue.poll();
+            int currLevel = levels.poll();
+            //check current level
+            if(dict.containsKey(currLevel)){
+                //add to existing level
+                dict.get(currLevel).add(temp.val);
+            }else{
+                //create new level
+                List<Integer> newLevel = new ArrayList<>();
+                newLevel.add(temp.val);
+                dict.put(currLevel, newLevel);
+            }
+            //update min / max level tracker
+            minLevel = Math.min(minLevel, currLevel);
+            maxLevel = Math.max(maxLevel, currLevel);
+            //check left / right subtree
+            if(temp.left != null){
+                queue.add(temp.left);
+                levels.add(currLevel - 1);  //Note: level number might be negative!
+            }
+            if(temp.right != null){
+                queue.add(temp.right);
+                levels.add(currLevel + 1);
+            }
+        }
+        //make result
+        for(int i = minLevel; i < maxLevel + 1; ++ i){
+            if(dict.containsKey(i)){
+                result.add(dict.get(i));
+            }
+        }
+        return result;
+    }
+
+    /*
+    * Symmetric tree
+    * */
+    public boolean isSymmetric(TreeNode root){
+        //DFS the tree
+        //handle edge case
+        if(root == null || (root.left == null && root.right == null)){
+            return true;
+        }
+    }
+
+    private boolean symmetricDFS(TreeNode leftNode, TreeNode rightNode){
+        //base case: reached leaf, nothing went wrong
+        if(leftNode == null && rightNode == null){
+            return true;
+        }
+        //check tree shape first, then check val
+        if(leftNode == null || rightNode == null){
+            return false;
+        }
+        if(leftNode.val == rightNode.val){
+            //check val via mirror pattern
+            return symmetricDFS(leftNode.right, rightNode.left) && symmetricDFS(leftNode.left, rightNode.right);
+        }
+    }
+
+    /*
+    * Diameter of binary tree
+    * */
+    public int diameterOfBinaryTree(TreeNode root){
+        //DFS tree, spread from root
+        int result = 0;
+        //handle edge cases
+        if(root == null){
+            return result;
+        }
+        diameterDFS(result, root);
+        return result;
+    }
+
+    private int diameterDFS(int result, TreeNode root){
+        //base case: reached leaf
+        if(root == null){
+            return 0;
+        }
+        int leftMax = diameterDFS(root.left);
+        int rightMax = diameterDFS(root.right);
+        //update intermediate result
+        result = Math.max(result, leftMax + rightMax);
+        return Math.max(leftMax, rightMax) + 1; //return to previous layer (only to update result)
     }
 }
