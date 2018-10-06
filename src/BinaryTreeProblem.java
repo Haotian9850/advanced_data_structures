@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class BinaryTreeProblem {
@@ -105,6 +106,38 @@ public class BinaryTreeProblem {
     }
 
     /*
-    *
+    * Maximum depth of binary tree
     * */
+    public int maxDepthRecursive(TreeNode root){
+        //base case
+        if(root == null){
+            return 0;   //reached leaf
+        }
+        return 1 + Math.max(maxDepthRecursive(root.left), maxDepthRecursive(root.right));
+    }
+
+    public int maxDepthIterative(TreeNode root){
+        //DFS the tree iteratively
+        //handle edge case
+        int result = 0;
+        if(root == null){
+            return result;
+        }
+        LinkedList<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        while(!queue.isEmpty()){
+            ++ result;
+            int n = queue.size();
+            for(int i = 0; i < n; ++ i){
+                TreeNode temp = queue.poll();
+                if(temp.left != null){
+                    queue.add(temp.left);
+                }
+                if(temp.right != null){
+                    queue.add(temp.right);
+                }
+            }
+        }
+        return result;
+    }
 }
