@@ -1,119 +1,15 @@
 public class main {
     /*main class for data structure testing*/
     public static void main(String[] args){
-        /*testing singly linked list*/
-
-        System.out.println("--------------------------------- singlyLinkedList test---------------------------------");
-        int[] a = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
-        singlyLinkedList s = new singlyLinkedList();
-        s.constructFromArray(a);
-        s.display();
-        s.insertAtHead(0);
-        s.display();
-        s.insertAtTail(13);
-        s.display();
-        s.deleteFromPos(4);   //has a problem!
-        s.display();
-        s.insertAtPos(4, 4);    //working properly
-        s.display();
-        System.out.println(s.getSize());
-        System.out.println(s.isEmpty());
-
-        singlyLinkedList s1 = new singlyLinkedList();
-        System.out.println(s1.isEmpty());
-        s1.insertAtTail(900);
-        s1.display();
-        s1.deleteFromPos(0);
-        s1.display();
-
-        System.out.println("--------------------------------- doublyLinkedList test---------------------------------");
-        int[] b = new int[]{1, 2, 3, 4, 5};
-        doublyLinkedList d = new doublyLinkedList();
-        d.constructFromArray(b);
-        d.display();
-        d.insertAtTail(6);
-        d.display();
-        d.insertAtHead(0);
-        d.display();
-        d.insertAtPos(4, 3);
-        d.display();
-        d.deleteFromPos(3);
-        d.display();
-        System.out.println(d.isEmpty());
-        doublyLinkedList d1 = new doublyLinkedList();
-        System.out.println(d1.isEmpty());
-        d1.insertAtTail(1);
-        d1.display();
-        d1.deleteFromPos(0);
-        d1.display();
-        d1.insertAtHead(7);
-        d1.display();
-        d1.insertAtHead(8);
-        d1.display();
-
-        System.out.println("--------------------------------- stack test---------------------------------");
-        int[] c = new int[]{1, 2, 3, 4, 5, 6, 7, 8};
-        stack testStack = new stack(9); //capacity == 9
-        testStack.constructFromArray(c);
-        testStack.display();
-        testStack.push(9);
-        testStack.display();
-        System.out.println(testStack.isEmpty());
-        System.out.println(testStack.isFull());
-        System.out.println(testStack.peek());
-        testStack.pop();
-        testStack.display();    //works!
-
-        System.out.println("--------------------------------- queue test---------------------------------");
-        int[] e = new int[]{1, 2, 3, 4, 5};
-        queue q = new queue(9);
-        q.constructFromArray(e);
-        q.display();
-        System.out.println(q.peek());
-        q.poll();
-        System.out.println(q.isEmpty());
-        System.out.println(q.isFull());
-        q.display();
-        q.insert(6);
-        System.out.println(q.isFull());
-        q.display();
-
-        System.out.println("--------------------------------- binarySearchTree test---------------------------------");
-        randomArrayGenerator r1 = new randomArrayGenerator();
-        int[] avl = r1.generateRandomArray(50);
-        binarySearchTree g = new binarySearchTree();
-        int[] f = new int[]{9, 5, 1, 2, 4, 7, 8, 3, 12, 11};
-        g.constructFromArray(avl);
-        System.out.println(g.isEmpty());
-        g.display();
-        g.insert(29);
-        System.out.println(g.countNodes());
-        g.display();
-        System.out.println(g.isEmpty());
-        g.display();
-
-        g.inOrderTraversal();
-        g.preOrderTraversal();
-        g.postOrderTraversal();
-
-        System.out.println("--------------------------------- minHeap test---------------------------------");
-        int[] h = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
-        minHeap m = new minHeap();
-        m.constructFromArray(h);
-        m.displayArray();
-        m.display();
-
-        System.out.println("--------------------------------- avlTree test---------------------------------");
-
-        avlTree testAVL = new avlTree();
-        testAVL.constructFromArray(avl);
-        testAVL.display();
-
-        System.out.println("--------------------------------- randomArrayGenerator ---------------------------------");
-        randomArrayGenerator r = new randomArrayGenerator();
-        int[] resultArray = r.generateRandomArray(29, 50);
-        for(Integer resultArrayNum: resultArray){
-            System.out.print(resultArrayNum + " ");
-        }
+        int[] array = new int[]{12, 2, 23, 565, 5, 4, 78, 8999, 145615, 2, 1, 0, 56};
+        binarySearchTree testBST = new binarySearchTree();
+        testBST.constructFromArray(array);
+        testBST.display();
+        testBST.delete(12);
+        testBST.display();
+        testBST.insert(9);
+        testBST.display();
+        testBST.delete(0);
+        testBST.display();
     }
 }

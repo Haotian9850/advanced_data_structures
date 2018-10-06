@@ -208,7 +208,7 @@ public class binarySearchTree {
     }
 
 
-    /*utility method of display*/
+    /*utility method of display. AKA BFS of a binary search tree*/
     private ArrayList<ArrayList<Integer>> levelOrderTraversal(binaryNode treeRoot){
         ArrayList<ArrayList<Integer>> result = new ArrayList<ArrayList<Integer>>();
         ArrayList<Integer> nodeValues = new ArrayList<Integer>();

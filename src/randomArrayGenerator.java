@@ -23,9 +23,9 @@ public class randomArrayGenerator {
         int[] a = new int[len];
         HashSet<Integer> dict = new HashSet<Integer>();
         for (int i = 0; i < len; i ++){
-            a[i] = (int) (Math.random() * 100);
+            a[i] = (int) (Math.random() * 1000);
             while(dict.contains(a[i])){
-                a[i] = (int) (Math.random() * 100);
+                a[i] = (int) (Math.random() * 1000);
             }
             dict.add(a[i]);
         }
@@ -43,6 +43,29 @@ public class randomArrayGenerator {
             dict.add(a[i]);
         }
         return a;
+    }
+
+    public void generateRandomArrayAndPrint(int len){
+        int[] a = new int[len];
+        HashSet<Integer> dict = new HashSet<Integer>();
+        for (int i = 0; i < len; i ++){
+            a[i] = (int) (Math.random() * 1000);
+            while(dict.contains(a[i])){
+                a[i] = (int) (Math.random() * 1000);
+            }
+            dict.add(a[i]);
+        }
+        printArray(a);
+    }
+
+    public void printArray(int[] a){
+        System.out.println();   //new line separator
+        System.out.print("{");
+        for(int i = 0; i < a.length - 1; i ++){
+            System.out.print(a[i] + ", ");
+        }
+        System.out.print(a[a.length - 1] + "}");
+        System.out.println();   //new line separator
     }
 
 

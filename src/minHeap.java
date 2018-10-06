@@ -1,191 +1,136 @@
-import java.util.Arrays;
-import java.util.NoSuchElementException;
-
 /*
 * Array-base min heap with int data. Heap root is set to the first (index = 0) element of the underlying array
-* Implementation*/
+* Implementation: underlying array uses a dummy head set to Integer.MIN_VALUE.*/
 public class minHeap {
-    private final int n = 2;    //number of children for every heap node
-    private int size;       //size of heap (AKA number of valid heap nodes)
-    private int[] array;    //underlying array
+    private int[] array;
+    private int size;
+    private int capacity;
 
     public minHeap(){
+        this.array = new int[100];
         this.size = 0;
-        this.array = new int[0];
+        this.capacity = 100;
     }
 
     public minHeap(int capacity){
+        this.array = new int[capacity + 1];
         this.size = 0;
-        this.array = new int[capacity];
-        Arrays.fill(this.array, -1);    //initialize underlying array with placeholder values (-1)
+        this.capacity = capacity;
+        this.array[0] = Integer.MIN_VALUE;
     }
 
-    /*Is this heap empty?*/
-    public boolean isEmpty(){
-        return this.size == 0;
+    /*get parent index of a heap "node" */
+    private int getParent(int index){
+        return index / 2;
     }
 
-    /*Is this heap full?*/
-    public boolean isFull(){
-        return this.size == this.array.length;  //count size from 1!
+    /*get left child index of a heap "node"*/
+    private int getLeftChild(int index){
+        return 2 * index;
     }
 
-    /*set heap capacity. Underlying array will be restored.*/
-    public void setCapacity(int capacity){
-        this.array = new int[capacity];
-        Arrays.fill(this.array, -1);    //placeholder value -1
+    /*get right child index of a heap "node"*/
+    private int getRightChild(int index){
+        return 2 * index + 1;
     }
 
-    /*restore a heap*/
-    public void restore(){
-        this.array = new int[this.array.length];
-        Arrays.fill(this.array, -1);
-        this.size = 0;
-    }
-
-    /*get parent index of a heap node*/
-    public int getParent(int i){
-        return (i - 1) / n;
-    }
-
-    /*get index of kth child of a heap node*/
-    public int getKthChild(int index, int k){
-        return index * n + k;
-    }
-
-    /*heapify up operation to maintain heap property*/
-    public void heapifyUp(int i){
-        int temp = this.array[i];
-        while(i > 0 && temp < this.array[getParent(i)]){
-            //swap
-            this.array[i] = this.array[getParent(i)];
-            i = getParent(i);
+    /*Is the node a "leaf" in the heap?*/
+    private boolean isLeaf(int index){
+        if(index >= this.size / 2 && index < this.size){
+            return true;
         }
-        this.array[i] = temp;
+        return false;
     }
 
-    /*heapify down operation to maintain heap property*/
-    public void heapifyDown(int index){
-        int child;
-        int temp = this.array[index];
-        while(getKthChild(index, 1) < this.array.length){
-            child = minChild(index);
-            if(this.array[child] < temp){
-                //swap
-                this.array[index] = this.array[child];
-            }else{
-                break;  //heap property is restored
+    /*maintain heap property*/
+    public void heapify(int index){
+        if(!isLeaf(index)){
+            if (this.array[index] > this.array[getLeftChild(index)] || this.array[index] > this.array[getRightChild(index)]){
+                if(this.array[getLeftChild(index)] < this.array[getRightChild(index)]){
+                    swap(this.array, index, getLeftChild(index));
+                    heapify(getLeftChild(index));
+                }else{
+                    swap(this.array, index, getRightChild(index));
+                    heapify(getRightChild(index));
+                }
             }
-            index = child;
         }
-        this.array[index] = temp;
     }
 
-    /*get the index of smallest child of a heap node*/
-    public int minChild(int index){
-        int resultIndex = getKthChild(index, 1);
-        int  k = 2;
-        int position = getKthChild(index, k);
-        while(k <= n && position < this.size){
-            if(this.array[position] < this.array[resultIndex]){
-                resultIndex = position;
-            }
-            position = getKthChild(index, k ++);
-        }
-        return resultIndex;
-    }
-
-    /*standard insert operation of a heap*/
-    public void insert(int value){
-        if(isFull()){
-            throw new IndexOutOfBoundsException("The heap is already full!");
-        }
-        this.array[this.size ++] = value;
-        heapifyUp(this.size - 1);   //perform heapify up on the node just inserted
-    }
-
-    /*find min value of the heap*/
-    public int findMin(){
-        if(isEmpty()){
-            throw new NoSuchElementException("The heap is empty!");
-        }
-        return this.array[0];
-    }
-
-    /*standard deleteMin operation of a min heap*/
-    public int deleteMin(){
-        int result = this.array[0];
-        delete(0);
+    /*delete and return "root" of the heap. Application: heap sort*/
+    public int peek(){
+        int result = this.array[1];
+        this.array[1] = this.array[this.size --];
+        heapify(1);
         return result;
     }
 
-    /*remove a specified index from the heap then restore all heap properties*/
-    public int delete(int index){
-        if(isEmpty()){
-            throw new NoSuchElementException("The heap is empty!");
+    /*insert an int into the heap*/
+    public void insert(int n){
+        if(this.size + 1 > this.capacity){
+            throw new IndexOutOfBoundsException("Insufficient heap space! Try re-declare a larger heap!");
         }
-        int toBeDeleted = this.array[index];
-        this.array[index] = this.array[this.size - 1];
-        this.size --;
-        heapifyDown(index);
-        return toBeDeleted;
+        this.array[this.size ++] = n;
+        int curr = this.size;
+        while(this.array[curr] < this.array[getParent(curr)]){
+            swap(this.array, curr, getParent(curr));
+            curr = getParent(curr); //update curr ptr
+        }
     }
 
-    /*display underlying array of a heap*/
-    public void displayArray(){
-        if(isEmpty()){
-            throw new NoSuchElementException("The heap is empty!");
+    /*swap two element in an int[]*/
+    private void swap(int[] a, int i, int j){
+        int temp = a[j];
+        a[j] = a[i];
+        a[i] = temp;
+    }
+
+    /*construct a min heap from an int[]*/
+    public void constructFromArray(int[] a){
+        if(this.capacity < a.length){
+            throw new IndexOutOfBoundsException("Insufficient heap space! Try re-declare a larger heap of capacity " + a.length + 1 + " !");
         }
-        System.out.print("nodeValue: ");
-        for(int i = 0; i < this.size; i ++){
-            System.out.print(this.array[i] + " ");
+        for(Integer i: a){
+            insert(i);
         }
-        System.out.println();
-        System.out.print("index:     ");
-        for(int i = 0; i < this.size; i ++){
+    }
+
+    /*print out underlying array*/
+    public void printUnderlyingArray(){
+        System.out.println();   //new line separator
+        for(Integer i: this.array){
             System.out.print(i + " ");
         }
         System.out.println();   //new line separator
     }
 
-    /*construct a min heap from an int[]*/
-    public void constructFromArray(int[] a){
-        this.setCapacity(a.length);
-        for(Integer i: a){
-            this.insert(i);
-        }
-    }
-
-    /*return true if a min heap has full size property*/
-    public boolean isComplete(){
-        int size = this.size;
-        int minus = 1;
-        while(size != 0){
-            size -= minus;
-            minus *= 2;
-            if(size < 0){
-                return false;
-            }
-        }
-        return true;
-    }
 
     /*visualization of an array-based min heap*/
     public void display(){
-        if(!isComplete()){
-            throw new IndexOutOfBoundsException("The heap is not complete and therefore cannot be visualized.");
-        }
-        int numberOfNodes = 2;
-        int currIndex = 1;
-        System.out.println(this.array[0]);
-        while(currIndex < this.size){
-            for(int i = currIndex; i < currIndex + numberOfNodes; i ++){
-                System.out.print(this.array[i] + " ");
+        try{
+            int temp = -1;
+            int numberOfNodes = 2;
+            int currIndex = 1;
+            System.out.println(this.array[1]);
+            while(currIndex < this.size) {
+                for (int i = currIndex; i < currIndex + numberOfNodes; i++) {
+                    System.out.print(this.array[i] + " ");
+                }
+                temp = currIndex;
+                currIndex += numberOfNodes;
+                numberOfNodes *= 2;
+                System.out.println();   //new line separator
             }
-            int temp = currIndex;
-            currIndex += numberOfNodes;
-            numberOfNodes *= 2;
-            System.out.println();   //new line separator
+        }catch(IndexOutOfBoundsException e){
+            //do nothing! -weird exception!
+        }
+    }
+
+    /*utility function for display*/
+    public void printLastLine(int temp){
+        //print rest of the underlying array
+        for(int i = temp + 1; i < this.size; i ++){
+            System.out.print(this.array[i]);
         }
     }
 
