@@ -1,10 +1,8 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class BinaryTreeProblem {
     /*
+    * 114
     * Given a binary tree, flatten it to a linked list in-place
     * Note: the resultant linked list should still be a valid binary tree (not BST!)
     * */
@@ -33,11 +31,35 @@ public class BinaryTreeProblem {
         return root;
     }
 
+    public void flattenIterative(TreeNode root){
+        //right most node. in-place operation. Also O(n) performance
+        TreeNode rightMost = null;
+        TreeNode temp = null;
+        while(root != null) {
+            if (root.left != null) {
+                rightMost = root.left;
+                while (rightMost.right != null) {
+                    rightMost = rightMost.right;
+                }
+                temp = root.right;
+                root.right = root.left;
+                rightMost.right = temp;
+                //set null pointer
+                root.left = null;
+            }
+            //move ptr
+            root = root.right;
+        }
+    }
+
+
+
     /*
+    * 112
     * Given a binary tree and a sum, determine if the tree has a root-to-leaf path such that adding up all the
     * values among the path equals a given sum
     * */
-    public boolean hasPathSum(TreeNode root, int sum){
+    public boolean hasPathSumRecursive(TreeNode root, int sum){
         //base cases
         if(root == null){
             return false;   //not finding a sum but reached leaf level...
@@ -47,15 +69,49 @@ public class BinaryTreeProblem {
         }
         sum -= root.val;
         if(root.left != null){
-            return hasPathSum(root.left, sum);
+            return hasPathSumRecursive(root.left, sum);
         }
         if(root.right != null){
-            return hasPathSum(root.right, sum);
+            return hasPathSumRecursive(root.right, sum);
         }
         return false;
     }
 
+    public boolean hasPathSumIterative(TreeNode root, int sum){
+        //use a stack for DFS
+        //handle edge case
+        if(root == null){
+            return false;
+        }
+        Stack<TreeNode> path = new Stack();
+        Stack<Integer> currSum = new Stack<>();
+        //perform a DFS of the tree
+        path.push(root);
+        currSum.push(root.val);
+        while(!path.isEmpty()){
+            TreeNode currNode = path.pop();
+            int temp = currSum.pop();
+            //return condition (true): reached leaf node && is sum
+            if(currNode.left == null && currNode.right == null){
+                return temp == sum;
+            }else{
+                //havn't reached leaf node
+                if(currNode.left != null){
+                    path.push(currNode.left);
+                    currSum.push(currNode.left.val + temp);
+                }
+                if(currNode.right != null){
+                    path.push(currNode.right);
+                    currSum.push(currNode.right.val + temp);
+                }
+            }
+        }
+        return false;
+    }
+
+
     /*
+    * 113
     * Given a binary tree and a sum, find all root-to-leaf paths where each path's sum equals the given sum
     * */
     public List<List<Integer>> pathSumRootToLeaf(TreeNode root, int sum){
@@ -82,6 +138,7 @@ public class BinaryTreeProblem {
     }
 
     /*
+    * 437 Path Sum III
     * Given a binary tree, find the number of paths that downward paths that sum to a given value
     * */
     public int pathSumDownwards(TreeNode root, int sum){
@@ -107,6 +164,7 @@ public class BinaryTreeProblem {
     }
 
     /*
+    * 104
     * Maximum depth of binary tree
     * */
     public int maxDepthRecursive(TreeNode root){
@@ -143,15 +201,7 @@ public class BinaryTreeProblem {
     }
 
     /*
-    * Binary tree right side view
-    * LCA
-    * Validate binary search tree
-    * Binary tree vertical order traversal
-    * Symmetric tree
-    *
-    * */
-
-    /*
+    * 199
     * Binary tree right side view
     * */
     public List<Integer> rightSideView(TreeNode root){
@@ -183,16 +233,17 @@ public class BinaryTreeProblem {
     }
 
     /*
-    * LCA (classic of classics!)
+    * 236
+    * LCA (classic of classics!). This is LOWEST COMMON ANCESTOR OF BINARY TREE NOT BST!
     * */
-    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q){
+    public TreeNode lowestCommonAncestorRecursive(TreeNode root, TreeNode p, TreeNode q){
         //base case
         if(root == null || root == p || root == q){
             return root;
         }
         //search in each subtree
-        TreeNode left = lowestCommonAncestor(root.left, p, q);
-        TreeNode right = lowestCommonAncestor(root.right, p, q);
+        TreeNode left = lowestCommonAncestorRecursive(root.left, p, q);
+        TreeNode right = lowestCommonAncestorRecursive(root.right, p, q);
         if(left != null && right != null) {
             return root;
         }else if(left == null){
@@ -202,7 +253,42 @@ public class BinaryTreeProblem {
         }
     }
 
+    public TreeNode lowestCommonAncestorIterative(TreeNode root, TreeNode p, TreeNode q){
+        //handle edge case
+        if(root == null || p == null || q == null){
+            return null;
+        }
+        Stack<TreeNode> stack = new Stack<>();
+        //maintain a HashMap to store child-parent relation
+        HashMap<TreeNode, TreeNode> map = new HashMap<>();  //key: child (left and right), value: parent
+        //init
+        stack.push(root);
+        map.put(root, null);
+        while(!map.containsKey(p) || map.containsKey(q)){
+            TreeNode node = stack.pop();
+            if(node.left != null){
+                map.put(node.left, node);
+                stack.push(node.left);
+            }
+            if(node.right != null){
+                map.put(node.right, node);
+                stack.push(node.right);
+            }
+        }
+        HashSet<TreeNode> ancestors = new HashSet<>();
+        //find common ancestor
+        while(p != null){
+            ancestors.add(p);
+            p = map.get(p);
+        }
+        while(!ancestors.contains(q)){
+            q = map.get(p);
+        }
+        return q;
+    }
+
     /*
+    * 98
     * Validate binary search tree
     * */
     public boolean isValidBST(TreeNode root){
@@ -222,6 +308,28 @@ public class BinaryTreeProblem {
             return false;   //not satisfying BST property
         }
         return validate(root.left, min, root.val) && validate(root.right, root.val, max);
+    }
+
+    public boolean isValidBSTIteravtie(TreeNode root){
+        //explicit in-order traversal (Stack) and validate on-the-go
+        Stack<TreeNode> traversal = new Stack<>();
+        LinkedList<Integer> vals = new LinkedList<>();
+        TreeNode current = root;    //set pointer
+        while(current != null || !traversal.isEmpty()){
+            while(current != null){
+                traversal.push(current);
+                current = current.left;
+            }
+            //current must be null here...so reuse it
+            current = traversal.pop();
+            vals.add(current.val);
+            //do the check
+            if(vals.size() > 1 && vals.get(vals.size() - 2) >= vals.get(vals.size() - 1)){
+                return false;
+            }
+            current = current.right;
+        }
+        return true;
     }
 
     /*
@@ -285,6 +393,7 @@ public class BinaryTreeProblem {
         if(root == null || (root.left == null && root.right == null)){
             return true;
         }
+        return false;
     }
 
     private boolean symmetricDFS(TreeNode leftNode, TreeNode rightNode){
@@ -306,7 +415,7 @@ public class BinaryTreeProblem {
     /*
     * Diameter of binary tree
     * */
-    public int diameterOfBinaryTree(TreeNode root){
+    public int diameterOfBinaryTreeRecursive(TreeNode root){
         //DFS tree, spread from root
         int result = 0;
         //handle edge cases
@@ -329,12 +438,44 @@ public class BinaryTreeProblem {
         return Math.max(leftMax, rightMax) + 1; //return to previous layer (only to update result)
     }
 
+    public int diameterOfBinaryTreeIterative(TreeNode root){
+        //calculate max left & right path length for every node in the tree
+        //handle edge case
+        if(root == null){
+            return 0;
+        }
+        Stack<TreeNode> stack = new Stack<>();
+        HashMap<TreeNode, Integer> lenMap = new HashMap<>();
+        //init
+        int result = Integer.MIN_VALUE;
+        while(!stack.isEmpty()){
+            TreeNode temp = stack.pop();
+            if(temp != null){
+                //use wrapper type to avoid nullPointerException
+                Integer left = lenMap.get(temp.left);
+                Integer right = lenMap.get(temp.right);
+                if(left != null && right != null){
+                    lenMap.put(temp, Math.max(left, right) + 1);
+                    //update result
+                    result = Math.max(result, left + right);
+                }else{
+                    stack.push(temp);
+                    stack.push(temp.left);
+                    stack.push(temp.right);
+                }
+            }else{
+                lenMap.put(null, 0);
+            }
+        }
+        return result;
+    }
+
     /*
     * Binary tree inorder traversal: iterative approach
     * */
     public List<Integer> inOrderIterative(TreeNode root){
         //return all nodes in-order as a list of nodes
-        LinkedList<Integer> result = new ArrayList<>();
+        LinkedList<Integer> result = new LinkedList<>();
         LinkedList<TreeNode> stack = new LinkedList<>();
         TreeNode currNode = root;
         while(!stack.isEmpty() || currNode != null){
@@ -399,7 +540,7 @@ public class BinaryTreeProblem {
     * Binary tree maximum path sum: Given a non-empty binary tree, find the maximum path sum.
     * The path must contain at least one node and does not need to go through the root.
     * */
-    public int maxPathSum(TreeNode root){
+    public int maxPathSumRecursive(TreeNode root){
         int result = Integer.MIN_VALUE;
         if(root == null){
             return 0;
@@ -413,11 +554,16 @@ public class BinaryTreeProblem {
         if(root == null){
             return 0;
         }
-        int leftSum = Math.max(maxPathSumUtil(root.left, temp), 0);
+        int leftSum = Math.max(maxPathSumUtil(root.left, temp), 0); //involves greedy?
         int rightSum = Math.max(maxPathSumUtil(root.right, temp), 0);
         int sum = leftSum + rightSum + root.val;
         //update intermediate result
         temp = Math.max(temp, sum);
         return Math.max(leftSum, rightSum) + root.val;
+    }
+
+    public int maxPathSumIterative(TreeNode root){
+        //path DOES NOT need to go through root
+
     }
 }
