@@ -8,7 +8,7 @@ public class BinaryTreeBasicOps {
     * */
 
     /*
-    * Pre-order traversal
+    * Pre-order traversal: iterative approach
     * */
     public List<Integer> preOrderTraversalIterative(TreeNode root){
         List<Integer> result = new ArrayList<>();
@@ -32,7 +32,7 @@ public class BinaryTreeBasicOps {
     }
 
     /*
-    * In-order traversal
+    * In-order traversal: iterative approach
     * */
     public List<Integer> inOrderTraversalIterative(TreeNode root){
         List<Integer> result = new ArrayList<>();
@@ -56,7 +56,7 @@ public class BinaryTreeBasicOps {
     }
 
     /*
-    * Post-order traversal
+    * Post-order traversal: iterative approach
     * */
     public List<Integer> postOrderTraversalIterative(TreeNode root){
         List<Integer> result = new ArrayList<>();
