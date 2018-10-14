@@ -333,6 +333,7 @@ public class BinaryTreeProblem {
     }
 
     /*
+    * 314
     * Binary tree vertical order traversal
     * */
     public List<List<Integer>> verticalOrder(TreeNode root){
@@ -385,6 +386,7 @@ public class BinaryTreeProblem {
     }
 
     /*
+    * 101
     * Symmetric tree
     * */
     public boolean isSymmetric(TreeNode root){
@@ -393,7 +395,7 @@ public class BinaryTreeProblem {
         if(root == null || (root.left == null && root.right == null)){
             return true;
         }
-        return false;
+        return symmetricDFS(root, root);
     }
 
     private boolean symmetricDFS(TreeNode leftNode, TreeNode rightNode){
@@ -413,6 +415,7 @@ public class BinaryTreeProblem {
     }
 
     /*
+    * 543
     * Diameter of binary tree
     * */
     public int diameterOfBinaryTreeRecursive(TreeNode root){
@@ -448,6 +451,7 @@ public class BinaryTreeProblem {
         HashMap<TreeNode, Integer> lenMap = new HashMap<>();
         //init
         int result = Integer.MIN_VALUE;
+        stack.push(root);
         while(!stack.isEmpty()){
             TreeNode temp = stack.pop();
             if(temp != null){
@@ -471,28 +475,29 @@ public class BinaryTreeProblem {
     }
 
     /*
+    * 94
     * Binary tree inorder traversal: iterative approach
     * */
     public List<Integer> inOrderIterative(TreeNode root){
         //return all nodes in-order as a list of nodes
-        LinkedList<Integer> result = new LinkedList<>();
-        LinkedList<TreeNode> stack = new LinkedList<>();
-        TreeNode currNode = root;
-        while(!stack.isEmpty() || currNode != null){
-            //discussion
-            while(currNode != null){
-                stack.add(currNode);
-                currNode = currNode.left;
+        Stack<TreeNode> stack = new Stack<>();
+        List<Integer> result = new ArrayList<>();
+        TreeNode current = root;
+        while(!stack.isEmpty() || current != null){
+            while(current != null){
+                stack.push(current);
+                current = current.left;
             }
-            //currNode == null -> reset currNode ptr
-            currNode = stack.poll();
-            result.add(currNode.val);
-            currNode = currNode.right;
+            //current must be null now, so reuse it
+            current = stack.pop();
+            result.add(current.val);
+            current = current.right;
         }
         return result;
     }
 
     /*
+    * 257
     * Binary tree paths: given a binary tree, return all root-to-leaf path
     * */
     public List<String> binaryTreePaths(TreeNode root){
@@ -518,7 +523,35 @@ public class BinaryTreeProblem {
         }
     }
 
+    public List<String> binaryTreePathsIterative(TreeNode root){
+        List<String> resultList = new ArrayList();
+        if (root == null) {
+            return resultList;
+        }
+        Queue<TreeNode> nodeQueue = new LinkedList<TreeNode>();
+        Queue<String> pathQueue = new LinkedList<>();
+        nodeQueue.offer(root);
+        pathQueue.offer(root.val + "");
+        while (!nodeQueue.isEmpty()) {
+            TreeNode currNode = nodeQueue.poll();
+            String item = pathQueue.poll();
+            if (currNode.left == null && currNode.right == null) {
+                resultList.add(item);
+            }
+            if (currNode.left != null) {
+                nodeQueue.offer(currNode.left);
+                pathQueue.offer(item + "->" + currNode.left.val);
+            }
+            if (currNode.right != null) {
+                nodeQueue.offer(currNode.right);
+                pathQueue.offer(item + "->" + currNode.right.val);
+            }
+        }
+        return resultList;
+    }
+
     /*
+    * 100
     * Same tree: given two binary trees, write a function to check if they are the same or not
     * */
     public boolean isSameTree(TreeNode p, TreeNode q){
