@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class FindCousins {
@@ -8,7 +9,7 @@ public class FindCousins {
     * Approach: get level of the node -> print all level nodes except for the node's siblings
     * */
 
-    public List<TreeNode> findCousin(TreeNode root, TreeNode node){
+    public List<TreeNode> findCousinRecursive(TreeNode root, TreeNode node){
         List<TreeNode> result = new ArrayList<>();
         getCousins(result, root, node, getLevel(root, node, 1));
         return result;
@@ -58,5 +59,41 @@ public class FindCousins {
             getCousins(result, root.left, node, level - 1);
             getCousins(result, root.right, node, level - 1);
         }
+    }
+
+    public List<TreeNode> findCousinIterative(TreeNode root, TreeNode node){
+        //handle edge case
+        List<TreeNode> result = new ArrayList<>();
+        if(root.val == node.val){
+            return result;
+        }
+        LinkedList<TreeNode> parentLevel = new LinkedList<>();
+        LinkedList<TreeNode> childLevel = new LinkedList<>();
+        parentLevel.offerLast(root);
+        boolean isFound = false;
+        while(!parentLevel.isEmpty()){
+            TreeNode parent = parentLevel.pop();
+            if(parent.left.val == node.val || parent.right.val == node.val){
+                //child node found
+                isFound = true;
+            }else{
+                if(parent.left != null){
+                    childLevel.push(parent.left);
+                }
+                if(parent.right != null){
+                    childLevel.push(parent.right);
+                }
+            }
+            if(parentLevel.isEmpty()){
+                if(isFound){
+                    break;
+                }
+                //if not, enter next level
+                parentLevel = childLevel;
+                childLevel.clear();
+            }
+        }
+        result = new ArrayList<>(childLevel);
+        return result;
     }
 }
