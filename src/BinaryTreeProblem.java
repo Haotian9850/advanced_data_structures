@@ -597,6 +597,6 @@ public class BinaryTreeProblem {
 
     public int maxPathSumIterative(TreeNode root){
         //path DOES NOT need to go through root
-
+        return 0;
     }
 }
